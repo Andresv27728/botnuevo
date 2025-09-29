@@ -1,4 +1,3 @@
-import { Browsers } from '@whiskeysockets/baileys'
 import { Boom } from '@hapi/boom'
 import NodeCache from 'node-cache'
 import cfonts from 'cfonts'
@@ -6,16 +5,13 @@ import chalk from 'chalk'
 import path from 'path'
 import fs from 'fs'
 import pino from 'pino'
-
-import baileys from '@whiskeysockets/baileys'
-
-const {
-  default: makeWASocket,
+import makeWASocket, {
   useMultiFileAuthState,
   DisconnectReason,
   makeInMemoryStore,
   jidNormalizedUser,
-} = baileys
+  Browsers,
+} from '@whiskeysockets/baileys'
 
 const logger = pino({ level: 'silent' })
 const store = makeInMemoryStore({ logger })
