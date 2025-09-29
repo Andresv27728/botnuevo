@@ -1,5 +1,5 @@
 import { Boom } from '@hapi/boom';
-import Baileys, {
+import makeWASocket, {
   useMultiFileAuthState,
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
@@ -67,6 +67,8 @@ function wrapLogger(lg) {
 const logger = wrapLogger(baseLogger);
 
 global.opts = global.opts || {};
+global.db = { data: { users: {} } };
+global.conns = [];
 
 
 export const commands = new Map();
@@ -219,7 +221,7 @@ async function connectToWhatsApp() {
   }
 
   const usingCode = option === '2';
-  const sock = Baileys({
+  const sock = makeWASocket({
     version,
     auth: {
       creds: state.creds,
@@ -370,14 +372,15 @@ async function connectToWhatsApp() {
   sock.ev.on('group-participants.update', async (event) => {
     const { id, participants, action } = event;
 
-    const { readSettingsDb } = await import('./lib/database.js');
-    const settings = readSettingsDb();
-    const groupSettings = settings[id];
+    try {
+      const { readSettingsDb } = await import('./lib/database.js');
+      const settings = readSettingsDb();
+      const groupSettings = settings[id];
 
-    if (!groupSettings) return;
+      // Proceed only if settings for this group exist
+      if (!groupSettings) return;
 
-    for (const p of participants) {
-      try {
+      for (const p of participants) {
         const userName = `@${p.split('@')[0]}`;
         let message = '';
 
@@ -390,9 +393,9 @@ async function connectToWhatsApp() {
         if (message) {
           await sock.sendMessage(id, { text: message, mentions: [p] });
         }
-      } catch (e) {
-        console.error(`Error en group-participants.update para el participante ${p}:`, e);
       }
+    } catch (e) {
+      console.error(`Error in group-participants.update for group ${id}:`, e);
     }
   });
 
