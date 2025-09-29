@@ -30,8 +30,9 @@ const rtx2 = `
 `.trim();
 
 async function startSubBot(options) {
-    const { subBotDir, m, conn, command } = options;
+    const { subBotDir, msg, sock: parentSock, command } = options;
     const isCodeCommand = command === 'code';
+    const senderJid = (msg.key.participant || msg.key.remoteJid);
 
     const { state, saveCreds } = await useMultiFileAuthState(subBotDir);
     const { version, isLatest } = await fetchLatestBaileysVersion();
@@ -58,16 +59,16 @@ async function startSubBot(options) {
         if (qr) {
             if (isCodeCommand) {
                 try {
-                    const secret = await sock.requestPairingCode(m.sender.split('@')[0]);
-                    await conn.sendMessage(m.key.remoteJid, { text: rtx2 });
-                    await conn.sendMessage(m.key.remoteJid, { text: secret.match(/.{1,4}/g)?.join('-') || secret });
+                    const secret = await sock.requestPairingCode(senderJid.split('@')[0]);
+                    await parentSock.sendMessage(msg.key.remoteJid, { text: rtx2 });
+                    await parentSock.sendMessage(msg.key.remoteJid, { text: secret.match(/.{1,4}/g)?.join('-') || secret });
                 } catch (e) {
                     console.error("Failed to request pairing code:", e);
-                    await conn.sendMessage(m.key.remoteJid, { text: "Failed to generate pairing code. Please try again later." });
+                    await parentSock.sendMessage(msg.key.remoteJid, { text: "Failed to generate pairing code. Please try again later." });
                 }
             } else {
                 const qrBuffer = await qrcode.toBuffer(qr, { scale: 8 });
-                await conn.sendMessage(m.key.remoteJid, { image: qrBuffer, caption: rtx });
+                await parentSock.sendMessage(msg.key.remoteJid, { image: qrBuffer, caption: rtx });
             }
         }
 
@@ -76,12 +77,12 @@ async function startSubBot(options) {
             const userJid = sock.user.id.split(':')[0];
             console.log(chalk.bold.cyanBright(`\n❒⸺⸺⸺⸺【• SUB-BOT •】⸺⸺⸺⸺❒\n│\n│ 🟢 ${userName} (+${userJid}) connected successfully.\n│\n❒⸺⸺⸺【• CONECTADO •】⸺⸺⸺❒`));
             global.conns.push(sock);
-            await conn.sendMessage(m.key.remoteJid, { text: `✅ Sub-bot connected successfully for +${userJid}` });
+            await parentSock.sendMessage(msg.key.remoteJid, { text: `✅ Sub-bot connected successfully for +${userJid}` });
         }
 
         if (connection === 'close') {
             const reason = lastDisconnect?.error?.output?.statusCode;
-            console.log(chalk.yellow(`Sub-bot for +${m.sender.split('@')[0]} disconnected. Reason: ${reason}`));
+            console.log(chalk.yellow(`Sub-bot for +${senderJid.split('@')[0]} disconnected. Reason: ${reason}`));
 
             const shouldReconnect = reason !== DisconnectReason.loggedOut;
             if (shouldReconnect) {
@@ -105,17 +106,24 @@ export default {
     category: 'owner',
     owner: true,
 
-    async run({ conn, m, command }) {
-        const subBotDir = path.join(__dirname, '../subbots/', m.sender.split('@')[0]);
+    async run({ sock, msg, command }) {
+        const senderJid = (msg?.key?.participant || msg?.key?.remoteJid);
+
+        if (!senderJid) {
+            console.error("Could not determine sender JID for serbot command.");
+            return sock.sendMessage(msg.key.remoteJid, { text: "Error: Could not identify you. Unable to start sub-bot." });
+        }
+
+        const subBotDir = path.join(__dirname, '../subbots/', senderJid.split('@')[0]);
 
         if (fs.existsSync(subBotDir)) {
-            await conn.sendMessage(m.key.remoteJid, { text: 'You already have an active sub-bot session. To create a new one, please delete the old session first.' });
+            await sock.sendMessage(msg.key.remoteJid, { text: 'You already have an active sub-bot session. To create a new one, please delete the old session first.' });
             return;
         }
 
         fs.mkdirSync(subBotDir, { recursive: true });
 
-        const options = { subBotDir, m, conn, command };
+        const options = { subBotDir, msg, sock, command };
         await startSubBot(options);
     }
 };

@@ -46,8 +46,10 @@ export async function handler(m, isSubBot) {
     return;
   }
 
-  // Add a delay before responding to prevent message sending issues
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  // Simulate typing and add a natural delay to make interactions more human-like
+  await this.presenceUpdate('composing', msg.key.remoteJid);
+  const randomDelay = Math.floor(Math.random() * 1000) + 500; // Delay between 0.5s and 1.5s
+  await new Promise(resolve => setTimeout(resolve, randomDelay));
 
   try {
     await command.run({
