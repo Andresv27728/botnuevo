@@ -30,6 +30,6 @@ export default {
 
     menuText += `Use any command without a prefix. For example: *ping*.`;
 
-    await sock.sendMessage(msg.key.remoteJid, { text: menuText }, { quoted: msg });
+    await sock.sendMessage(msg.key.remoteJid, { text: menuText });
   }
 };

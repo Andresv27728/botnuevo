@@ -33,12 +33,12 @@ export default {
       await sock.sendMessage(userJid, { text: `Your sub-bot linking code is: *${code}*\n\nUse this code to link your sub-bot.` });
 
       if (msg.key.remoteJid.endsWith('@g.us')) {
-        await sock.sendMessage(msg.key.remoteJid, { text: 'I have sent the linking code to your private chat.' }, { quoted: msg });
+        await sock.sendMessage(msg.key.remoteJid, { text: 'I have sent the linking code to your private chat.' });
       }
 
     } catch (error) {
       console.error('Failed to generate sub-bot code:', error);
-      await sock.sendMessage(msg.key.remoteJid, { text: 'I could not generate a linking code. Please try again later.' }, { quoted: msg });
+      await sock.sendMessage(msg.key.remoteJid, { text: 'I could not generate a linking code. Please try again later.' });
     }
   }
 };

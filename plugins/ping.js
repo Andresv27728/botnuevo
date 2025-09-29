@@ -9,6 +9,6 @@ export default {
     // Sending a message and waiting for the server to acknowledge it isn't a true ping.
     // A better measure is just the processing time.
     const processingTime = Date.now() - startTime;
-    await sock.sendMessage(msg.key.remoteJid, { text: `Pong! 🏓\nResponse time: ${processingTime}ms` }, { quoted: msg });
+    await sock.sendMessage(msg.key.remoteJid, { text: `Pong! 🏓\nResponse time: ${processingTime}ms` });
   }
 };

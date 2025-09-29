@@ -27,7 +27,7 @@ export default {
 - *Operating System:* ${os.type()} ${os.release()}
 - *Node.js Version:* ${process.version}`;
 
-    await sock.sendMessage(msg.key.remoteJid, { text: infoText }, { quoted: msg });
+    await sock.sendMessage(msg.key.remoteJid, { text: infoText });
   }
 };
 

@@ -8,12 +8,12 @@ export default {
   owner: true, // Flag for owner-only command
 
   async run({ sock, msg }) {
-    await sock.sendMessage(msg.key.remoteJid, { text: '🔄 Updating bot from repository...' }, { quoted: msg });
+    await sock.sendMessage(msg.key.remoteJid, { text: '🔄 Updating bot from repository...' });
 
     exec('git pull', (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
-        sock.sendMessage(msg.key.remoteJid, { text: `Update failed:\n\`\`\`${stderr}\`\`\`` }, { quoted: msg });
+        sock.sendMessage(msg.key.remoteJid, { text: `Update failed:\n\`\`\`${stderr}\`\`\`` });
         return;
       }
 
@@ -22,9 +22,9 @@ export default {
         response += `\n\n*Stderr:*\n\`\`\`${stderr}\`\`\``;
       }
 
-      sock.sendMessage(msg.key.remoteJid, { text: response }, { quoted: msg }).then(() => {
+      sock.sendMessage(msg.key.remoteJid, { text: response }).then(() => {
         if (stdout && !stdout.includes('Already up to date')) {
-          sock.sendMessage(msg.key.remoteJid, { text: 'Update downloaded. Restarting to apply changes...' }, { quoted: msg }).then(() => {
+          sock.sendMessage(msg.key.remoteJid, { text: 'Update downloaded. Restarting to apply changes...' }).then(() => {
             // The new index.js has a maintenance task that restarts hourly.
             // For an immediate update, we can exit the process.
             process.exit(0);

@@ -22,18 +22,18 @@ export default {
         if (!url) throw new Error('No valid URL found.');
         stiker = await sticker(null, url, config.botName, config.owner[0][1]);
       } else {
-        await sock.sendMessage(msg.key.remoteJid, { text: 'Reply to an image/video or provide a URL to create a sticker.' }, { quoted: msg });
+        await sock.sendMessage(msg.key.remoteJid, { text: 'Reply to an image/video or provide a URL to create a sticker.' });
         return;
       }
 
       if (stiker) {
-        await sock.sendMessage(msg.key.remoteJid, { sticker: stiker }, { quoted: msg });
+        await sock.sendMessage(msg.key.remoteJid, { sticker: stiker });
       } else {
         throw new Error('Sticker conversion failed.');
       }
     } catch (e) {
       console.error(e);
-      await sock.sendMessage(msg.key.remoteJid, { text: `Error: ${e.message}` }, { quoted: msg });
+      await sock.sendMessage(msg.key.remoteJid, { text: `Error: ${e.message}` });
     }
   }
 };

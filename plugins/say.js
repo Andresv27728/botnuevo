@@ -7,9 +7,9 @@ export default {
   async run({ sock, msg, text }) {
     const messageToSay = text.replace(this.name, '').trim();
     if (!messageToSay) {
-      await sock.sendMessage(msg.key.remoteJid, { text: 'Please provide a message for me to say.' }, { quoted: msg });
+      await sock.sendMessage(msg.key.remoteJid, { text: 'Please provide a message for me to say.' });
       return;
     }
-    await sock.sendMessage(msg.key.remoteJid, { text: messageToSay }, { quoted: msg });
+    await sock.sendMessage(msg.key.remoteJid, { text: messageToSay });
   }
 };

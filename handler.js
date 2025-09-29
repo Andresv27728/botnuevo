@@ -31,7 +31,7 @@ export async function handler(m, isSubBot) {
 
   if (now - lastUsed < COOLDOWN_SECONDS * 1000) {
     const timeLeft = ((lastUsed + COOLDOWN_SECONDS * 1000 - now) / 1000).toFixed(1);
-    await this.sendMessage(msg.key.remoteJid, { text: `Please wait ${timeLeft}s before using this command again.` }, { quoted: msg });
+    await this.sendMessage(msg.key.remoteJid, { text: `Please wait ${timeLeft}s before using this command again.` });
     return;
   }
 
@@ -42,7 +42,7 @@ export async function handler(m, isSubBot) {
   // Permission checks
   const isOwner = config.owner.some(o => o[0] === userId.split('@')[0]);
   if (command.owner && !isOwner) {
-    await this.sendMessage(msg.key.remoteJid, { text: 'This command is for the bot owner only.' }, { quoted: msg });
+    await this.sendMessage(msg.key.remoteJid, { text: 'This command is for the bot owner only.' });
     return;
   }
 
@@ -58,6 +58,6 @@ export async function handler(m, isSubBot) {
   } catch (error) {
     console.error(`Error executing command '${command.name}':`, error);
     const errorMessage = error instanceof Boom ? error.output.payload.message : 'An unexpected error occurred.';
-    await this.sendMessage(msg.key.remoteJid, { text: `Error: ${errorMessage}` }, { quoted: msg });
+    await this.sendMessage(msg.key.remoteJid, { text: `Error: ${errorMessage}` });
   }
 }
