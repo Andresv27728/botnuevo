@@ -354,9 +354,11 @@ async function connectToWhatsApp() {
     }
     if (connection === 'close') {
       const shouldReconnect = (lastDisconnect.error instanceof Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
-      console.log('Conexión principal cerrada, reconectando...', shouldReconnect);
+      console.log('Connection closed, reconnecting...', shouldReconnect);
       if (shouldReconnect) {
-        connectToWhatsApp();
+        // A simple reconnect is not enough. For a robust solution, we exit and let the process manager restart.
+        console.log('Forcing a restart for a clean session...');
+        process.exit(1); // Exit with an error code to signal a crash
       }
     } else if (connection === 'open') {
       console.log('            BOT PRINCIPAL CONECTADO');
