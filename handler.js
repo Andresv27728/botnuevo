@@ -46,6 +46,9 @@ export async function handler(m, isSubBot) {
     return;
   }
 
+  // Add a delay before responding to prevent message sending issues
+  await new Promise(resolve => setTimeout(resolve, 2000));
+
   try {
     await command.run({
       sock: this,
