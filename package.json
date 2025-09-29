@@ -20,9 +20,11 @@
   "homepage": "https://github.com/Andresv27728/botnuevo#readme",
   "dependencies": {
     "@whiskeysockets/baileys": "^7.0.0-rc.4",
+    "axios": "^1.12.2",
     "cfonts": "^3.3.1",
     "chalk": "^5.6.2",
     "file-type": "^21.0.0",
+    "google-libphonenumber": "^3.2.43",
     "node-cache": "^5.1.2",
     "node-webpmux": "^3.2.1",
     "pino": "^9.12.0",
