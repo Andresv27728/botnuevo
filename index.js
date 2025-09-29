@@ -219,7 +219,7 @@ async function connectToWhatsApp() {
   }
 
   const usingCode = option === '2';
-  const sock = Baileys.default({
+  const sock = Baileys({
     version,
     auth: {
       creds: state.creds,
